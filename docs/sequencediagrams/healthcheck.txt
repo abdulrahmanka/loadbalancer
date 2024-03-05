@@ -1,0 +1,14 @@
+title HealthCheck
+
+HealthService -> ServerGroupService : get registered servers
+
+ServerGroupService -> HealthService : list of ServerGroup
+note over HealthService: on configured schedule
+end note
+loop for all server groups
+    HealthService -> Backend Servers: check server health
+Backend Servers -> HealthService: return server health
+HealthService -> ServerGroupService: update server health
+end
+
+
