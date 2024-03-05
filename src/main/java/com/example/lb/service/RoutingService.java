@@ -21,7 +21,7 @@ public class RoutingService implements IRoutingService {
 
 
     @Value("#{'${routing.algos}'.split(',')}")
-    private List<String> algoBeans;
+    List<String> algoBeans;
 
     @Autowired
     IServerGroupService serverGroupService;
@@ -36,8 +36,7 @@ public class RoutingService implements IRoutingService {
             Class<?> clazz = Class.forName(algoClassName);
             Constructor<?> constructor = clazz.getConstructor(IServerGroupService.class);
             Object instance = constructor.newInstance(serverGroupService);
-            ILbRouting routingAlgo = (ILbRouting) instance;
-            return routingAlgo;
+            return (ILbRouting) instance;
         } catch (ClassNotFoundException | NoSuchMethodException |
                  InstantiationException | IllegalAccessException |
                  InvocationTargetException e) {
@@ -59,6 +58,9 @@ public class RoutingService implements IRoutingService {
     @Override
     public Server getServer(String rootPath) {
         ILbRouting routingAlgo =  routingAlgorithms.get(rootPath);
+        if(routingAlgo == null){
+            throw new RuntimeException("No routing algorithm found for root path: " + rootPath);
+        }
         Server server =  routingAlgo.getServer(rootPath);
         log.info("Server selected: " + server.getUrl()+" for path: "+rootPath+" using algo: "
                 +routingAlgo.getAlgorithmName());

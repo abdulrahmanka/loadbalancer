@@ -25,7 +25,7 @@ public class Random implements ILbRouting{
             throw new RuntimeException("No server group found for root path: " + path);
         }
         List<Server> servers = serverGroup.getHealthyServers();
-        if (servers.isEmpty()) {
+        if (!servers.isEmpty()) {
             int index = (int) (Math.random() * servers.size());
             return servers.get(index);
         }else{

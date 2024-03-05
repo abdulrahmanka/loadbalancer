@@ -9,5 +9,12 @@ public class CommonUtils {
         return path.split("/")[1];
     }
 
+    public static String createUrl(String serverUrl, String path) {
+        if (!serverUrl.endsWith("/")) serverUrl += "/";
+        if (path.startsWith("/")) path = path.substring(1);
+
+        return serverUrl + path;
+    }
+
 
 }

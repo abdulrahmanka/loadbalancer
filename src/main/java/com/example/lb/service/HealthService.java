@@ -3,6 +3,7 @@ package com.example.lb.service;
 import com.example.lb.model.HealthCheck;
 import com.example.lb.model.Server;
 import com.example.lb.model.ServerGroup;
+import com.example.lb.util.CommonUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -34,7 +35,7 @@ public class HealthService implements IHealthService {
 
     public Boolean isServerHealthy(ServerGroup serverGroup, Server server){
         HealthCheck healthCheck = serverGroup.getHealthCheck();
-        String url = server.getUrl() + healthCheck.getPath();
+        String url = CommonUtils.createUrl(server.getUrl(), healthCheck.getPath());
         try {
                     okhttp3.Request request = new okhttp3.Request.Builder()
                             .url(url)
@@ -51,7 +52,8 @@ public class HealthService implements IHealthService {
             }
         } catch (Exception e) {
                     serverGroupService.updateServerHealth(server, serverGroup.getRootPath(), Boolean.FALSE);
-                    log.error("Error occurred while checking server health: " + server.getUrl(), e);
+                    log.info("Error occurred while checking server health: " + server.getUrl());
+                    log.debug("Error occurred while checking server health: " + server.getUrl(), e);
                     return Boolean.FALSE;
                 }
 

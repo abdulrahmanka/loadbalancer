@@ -15,9 +15,9 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +59,7 @@ class RoundRobinTest {
         RoundRobin roundRobin = new RoundRobin(serverGroupService);
         Server server1 = roundRobin.getServer("profile");
         Server server2 = roundRobin.getServer("profile");
-        assertFalse(Objects.equals(server1.getUrl(), server2.getUrl()));
+        assertNotEquals(server1.getUrl(), server2.getUrl());
     }
 
 

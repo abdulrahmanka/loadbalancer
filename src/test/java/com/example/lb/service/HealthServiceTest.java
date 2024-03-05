@@ -13,7 +13,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -35,8 +36,8 @@ class HealthServiceTest {
     @Test
     void isServerHealthyFail() {
        ServerGroup serverGroup = CommonTestUtil.getServerGroup();
-       Boolean result =  healthService.isServerHealthy(serverGroup, new Server("http://localhost:98765", true));
-       assertNotNull(!result);
+       boolean result =  healthService.isServerHealthy(serverGroup, new Server("http://localhost:98765", true));
+       assertFalse(result);
     }
 
     @Test
@@ -48,7 +49,7 @@ class HealthServiceTest {
         int port = server.getPort();
         ServerGroup serverGroup = CommonTestUtil.getServerGroup();
         Boolean result =  healthService.isServerHealthy(serverGroup, new Server("http://localhost:"+port, true));
-        assertNotNull(result);
+        assertTrue(result);
         server.shutdown();
     }
 }

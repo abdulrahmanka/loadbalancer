@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,20 +19,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ServerGroupService implements IServerGroupService {
 
 
-    private ConcurrentHashMap<String, ServerGroup> serverGroupMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ServerGroup> serverGroupMap = new ConcurrentHashMap<>();
 
     @Value("${serverGroupFile}")
     private String serverGroupFile;
 
 
     @PostConstruct
-    void init() throws IOException {
+    void init() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             File file = new File(serverGroupFile);
-            String jsonContent = null;
+            String jsonContent;
             if (file.exists()) {
-                jsonContent = new String(new FileInputStream(file).readAllBytes());
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    jsonContent = new String(fis.readAllBytes());
+                }
             }else{
                 //Checking for classpath resource
                 ClassPathResource resource = new ClassPathResource(serverGroupFile);
@@ -69,11 +70,6 @@ public class ServerGroupService implements IServerGroupService {
     @Override
     public Collection<ServerGroup> getAllServerGroups() {
         return serverGroupMap.values();
-    }
-
-    public void updateServerGroup(ServerGroup serverGroup){
-        serverGroupMap.put(serverGroup.getRootPath(), serverGroup);
-
     }
 
     public void updateServerHealth(Server server, String rootPath, Boolean isHealthy) {

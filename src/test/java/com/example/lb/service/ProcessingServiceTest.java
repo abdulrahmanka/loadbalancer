@@ -35,21 +35,12 @@ public class ProcessingServiceTest {
     @Mock
     RoutingService routingService;
 
-    @Mock
-    HealthService healthService;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         when(retryService.retry(any(String.class))).thenReturn(Retry.fixedDelay(2, Duration.ofSeconds(1)));
         ReflectionTestUtils.setField(processingService, "retryService", retryService);
-
-
         ReflectionTestUtils.setField(processingService, "routingService", routingService);
-
-        ReflectionTestUtils.setField(processingService, "healthService", healthService);
-
-
     }
 
     @Test
@@ -71,52 +62,54 @@ public class ProcessingServiceTest {
     @Test
     public void testRelay() throws IOException {
 
-        MockWebServer server = new MockWebServer();
+        try(MockWebServer server = new MockWebServer()) {
 
-        server.enqueue(new okhttp3.mockwebserver.MockResponse()
-                .setBody("Test Response").addHeader("Content-Type", "text/plain"));
-        server.start();
-        int port = server.getPort();
-        String url = "http://localhost:" + port;
-        when(routingService.getServer(any(String.class))).thenReturn(new Server(url, true));
+            server.enqueue(new okhttp3.mockwebserver.MockResponse()
+                    .setBody("Test Response").addHeader("Content-Type", "text/plain"));
+            server.start();
+            int port = server.getPort();
+            String url = "http://localhost:" + port;
+            when(routingService.getServer(any(String.class))).thenReturn(new Server(url, true));
 
-        MockServerHttpRequest mockRequest = MockServerHttpRequest
-                .get("http://localhost:9000/path")
-                .build();
-        MockServerHttpResponse mockResponse = new MockServerHttpResponse();
+            MockServerHttpRequest mockRequest = MockServerHttpRequest
+                    .get("http://localhost:9000/path")
+                    .build();
+            MockServerHttpResponse mockResponse = new MockServerHttpResponse();
 
-        Mono<ResponseEntity<byte[]>> result = processingService.relay(mockRequest, mockResponse);
+            Mono<ResponseEntity<byte[]>> result = processingService.relay(mockRequest, mockResponse);
 
-        StepVerifier.create(result)
-                .expectNextMatches(responseEntity -> responseEntity.getStatusCode().value() == 200)
-                .verifyComplete();
-        server.shutdown();
+            StepVerifier.create(result)
+                    .expectNextMatches(responseEntity -> responseEntity.getStatusCode().value() == 200)
+                    .verifyComplete();
+            server.shutdown();
+        }
     }
 
 
     @Test
     public void testRelayPost() throws IOException {
 
-        MockWebServer server = new MockWebServer();
+        try(MockWebServer server = new MockWebServer()) {
 
-        server.enqueue(new okhttp3.mockwebserver.MockResponse()
-                .setBody("Test Response").addHeader("Content-Type", "text/plain"));
-        server.start();
-        int port = server.getPort();
-        String url = "http://localhost:" + port;
-        when(routingService.getServer(any(String.class))).thenReturn(new Server(url, true));
+            server.enqueue(new okhttp3.mockwebserver.MockResponse()
+                    .setBody("Test Response").addHeader("Content-Type", "text/plain"));
+            server.start();
+            int port = server.getPort();
+            String url = "http://localhost:" + port;
+            when(routingService.getServer(any(String.class))).thenReturn(new Server(url, true));
 
-        MockServerHttpRequest mockRequest = MockServerHttpRequest
-                .post("http://localhost:9000/path")
-                .build();
-        MockServerHttpResponse mockResponse = new MockServerHttpResponse();
+            MockServerHttpRequest mockRequest = MockServerHttpRequest
+                    .post("http://localhost:9000/path")
+                    .build();
+            MockServerHttpResponse mockResponse = new MockServerHttpResponse();
 
-        Mono<ResponseEntity<byte[]>> result = processingService.relay(mockRequest, mockResponse);
+            Mono<ResponseEntity<byte[]>> result = processingService.relay(mockRequest, mockResponse);
 
-        StepVerifier.create(result)
-                .expectNextMatches(responseEntity -> responseEntity.getStatusCode().value() == 200)
-                .verifyComplete();
-        server.shutdown();
+            StepVerifier.create(result)
+                    .expectNextMatches(responseEntity -> responseEntity.getStatusCode().value() == 200)
+                    .verifyComplete();
+            server.shutdown();
+        }
     }
 
     @Test

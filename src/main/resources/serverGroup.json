@@ -52,7 +52,7 @@
       "duration": 1
     },
     "healthCheck" : {
-      "path": "text"
+      "path": "api/text"
     },
     "servers": [
       {

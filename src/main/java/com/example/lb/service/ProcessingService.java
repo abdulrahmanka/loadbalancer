@@ -55,14 +55,18 @@ public class ProcessingService implements IProcessingService {
             log.error("No server found for root path: " + rootPath);
             return Mono.just(ResponseEntity.status(503).build());
         }
+        if(!server.isHealthy()){
+            log.error("Server is unhealthy: " + server.getUrl());
+            return Mono.error(new ServerUnavailableException("Server is unhealthy: " + server.getUrl()));
+        }
 
         HttpMethod method = request.getMethod();
         BodyInserter<?, ? super ReactiveHttpOutputMessage> bodyInserter
                 = BodyInserters.fromDataBuffers(request.getBody());
-
+        String url = CommonUtils.createUrl(server.getUrl(), request.getURI().getRawPath());
         return webClient
                 .method(method)
-                .uri(server.getUrl() + request.getURI().getRawPath())
+                .uri(url)
                 .headers(headers -> headers.addAll(request.getHeaders()))
                 .body(bodyInserter)
                 .exchangeToMono(clientResponse -> clientResponse.toEntity(byte[].class))
