@@ -1,0 +1,23 @@
+title LoadBalancer
+
+Client -> Lb Controller: API Request
+Lb Controller -> ProcessingService : Relay API Request
+ProcessingService -> ProcessingService: Parse Request
+ProcessingService -> RetryService: get retry strategy
+RetryService -> ProcessingService: retry strategy fetched
+loop until retry strategy is exhaused
+    ProcessingService -> RoutingService: get Server
+    RoutingService -> RoutingService: determin routing algo, get server
+    RoutingService -> ProcessingService: server resolved
+    ProcessingService -> WebClient: relay request to backend server
+    alt
+        WebClient -> ProcessingService: valid response
+        ProcessingService -> Lb Controller: relay response
+    else
+         WebClient -> ProcessingService: server unavailable
+         ProcessingService -> HealthService: update server health
+         ProcessingService -> ProcessingService: loop for retry
+    end
+end
+
+

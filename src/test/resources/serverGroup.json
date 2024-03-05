@@ -1,0 +1,68 @@
+[
+  {
+    "rootPath": "profile",
+    "routingAlgorithm": "RoundRobin",
+    "retryStrategy": {
+      "strategy": "Fixed",
+      "maxRetries": 2,
+      "duration": 1
+    },
+    "healthCheck" : {
+      "path": ""
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8081",
+        "healthy": true
+      },
+      {
+        "url": "http://localhost:8082",
+        "healthy": true
+      }
+    ]
+  },
+  {
+    "rootPath": "clients",
+    "routingAlgorithm": "RoundRobin",
+    "retryStrategy": {
+      "strategy": "Fixed",
+      "maxRetries": 2,
+      "duration": 1
+    },
+    "healthCheck" : {
+      "path": ""
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8081",
+        "healthy": true
+      },
+      {
+        "url": "http://localhost:8082",
+        "healthy": true
+      }
+    ]
+  },
+  {
+    "rootPath": "api",
+    "routingAlgorithm": "Random",
+    "retryStrategy": {
+      "strategy": "Fixed",
+      "maxRetries": 2,
+      "duration": 1
+    },
+    "healthCheck" : {
+      "path": "text"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:8085",
+        "healthy": true
+      },
+      {
+        "url": "http://localhost:8086",
+        "healthy": true
+      }
+    ]
+  }
+]
