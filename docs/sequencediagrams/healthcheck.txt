@@ -10,5 +10,3 @@ loop for all server groups
 Backend Servers -> HealthService: return server health
 HealthService -> ServerGroupService: update server health
 end
-
-
